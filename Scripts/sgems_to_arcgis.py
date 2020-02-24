@@ -86,6 +86,7 @@ def load_csv():
                 doc_writer.writerow(row)
 
     arcpy.ASCIIToRaster_conversion(out_file, out_raster)
+    arcpy.Mirror_management(out_raster, os.path.join(in_workspace, '../Data', 'outputRaster_mirrored.tif'))
 
 
 load_csv()
