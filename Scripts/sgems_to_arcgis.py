@@ -1,43 +1,25 @@
 import csv
 import os
-
 import arcpy
 
+"""Load GSLIB file and refactor for ArcGIS"""
+# Get input file and set workspace from relative path
+in_file = arcpy.GetParameterAsText(0)
+in_workspace = os.path.dirname(in_file)
+out_file = os.path.join(in_workspace, 'output.txt')
+out_raster = os.path.join(in_workspace, 'outputRaster.tif')
 
-class Startup(object):
-    """Load GSLIB file and refactor for ArcGIS"""
+# Get header data as input from user
+n_cols = arcpy.GetParameterAsText(1)
+n_rows = arcpy.GetParameterAsText(2)
+xll_center = arcpy.GetParameterAsText(3)
+yll_center = arcpy.GetParameterAsText(4)
+cell_size = arcpy.GetParameterAsText(5)
+nodata_value = arcpy.GetParameterAsText(6)
 
-
-# Default Workspace and file paths will be replaced if parameters are given
-in_workspace = os.path.dirname(__file__)
-in_file = os.path.join(in_workspace, '../Data', 'test')
-out_file = os.path.join(in_workspace, '../Data', 'output.txt')
-out_raster = os.path.join(in_workspace, '../Data', 'outputRaster.tif')
-
-# Check if parameters are given
-if arcpy.GetParameterAsText(0):
-    in_file = arcpy.GetParameterAsText(0)
-    out_raster = arcpy.GetParameterAsText(1)
-
-# Default header data for testing purposes
-n_cols = '70'
-n_rows = '105'
-xll_corner = '378923'
-yll_corner = '4072345'
-cell_size = '30'
-nodata_value = -32768
-
-if arcpy.GetParameterAsText(2):
-    n_cols = arcpy.GetParameterAsText(2)
-    n_rows = arcpy.GetParameterAsText(3)
-    xll_corner = arcpy.GetParameterAsText(4)
-    yll_corner = arcpy.GetParameterAsText(5)
-    cell_size = arcpy.GetParameterAsText(6)
-    nodata_value = arcpy.GetParameterAsText(7)
-
-header = ['NCOLS ' + n_cols, 'NROWS ' + n_rows, 'XLLCORNER ' + xll_corner,
-          'YLLCORNER ' + yll_corner,
-          'CELLSIZE ' + cell_size, 'NODATA_VALUE ' + str(nodata_value)]
+header = ['NCOLS ' + n_cols, 'NROWS ' + n_rows, 'XLLCENTER ' + xll_center,
+          'YLLCENTER ' + yll_center,
+          'CELLSIZE ' + cell_size, 'NODATA_VALUE ' + nodata_value]
 
 
 def parse_header(params, doc_reader):
@@ -74,19 +56,18 @@ def load_csv():
 
         # Create output file to be loaded into ArcMap
         with open(out_file, 'wb') as new_file:
-            # doc_writer = csv.writer(new_file, delimiter=' ', quotechar='', quoting=csv.QUOTE_NONE, escapechar=' ')
             doc_writer = csv.writer(new_file, delimiter=' ', quoting=csv.QUOTE_NONE, escapechar=' ')
             # Re-write header back to the top of reversed list
-            # doc_writer.writerow(params)
             for line in header:
-                new_file.writelines(line + '\n')
+                new_file.write(line + '\n')
 
             # Write remaining entries into newly created file
             for row in doc_reversed:
                 doc_writer.writerow(row)
 
+    # Convert ASCII file to raster. Output will be in same directory as input GSLIB file
     arcpy.ASCIIToRaster_conversion(out_file, out_raster)
-    arcpy.Mirror_management(out_raster, os.path.join(in_workspace, '../Data', 'outputRaster_mirrored.tif'))
+    arcpy.Mirror_management(out_raster, os.path.join(in_workspace, 'outputRaster_mirrored.tif'))
 
 
 load_csv()
