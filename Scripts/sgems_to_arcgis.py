@@ -10,34 +10,30 @@ class Startup(object):
 
 # Default Workspace and file paths will be replaced if parameters are given
 in_workspace = os.path.dirname(__file__)
-in_file = os.path.join(in_workspace, '..\\Data', 'test')
-# out_file = os.path.join(in_workspace, '..\\Data', 'output.txt')
-# = os.path.join(in_workspace, '..\\Data', 'outputRaster.tif')
-
-out_file = 'C:\Python27\output.txt'
-out_raster = 'C:\Python27\outputRaster.tif'
+in_file = os.path.join(in_workspace, '../Data', 'test')
+out_file = os.path.join(in_workspace, '../Data', 'output.txt')
+out_raster = os.path.join(in_workspace, '../Data', 'outputRaster.tif')
 
 # Check if parameters are given
 if arcpy.GetParameterAsText(0):
     in_file = arcpy.GetParameterAsText(0)
-    out_file = arcpy.GetParameterAsText(1)
-    out_raster = arcpy.GetParameterAsText(2)
+    out_raster = arcpy.GetParameterAsText(1)
 
 # Default header data for testing purposes
-n_cols = '480'
-n_rows = '450'
+n_cols = '70'
+n_rows = '105'
 xll_corner = '378923'
 yll_corner = '4072345'
 cell_size = '30'
 nodata_value = -32768
 
-if arcpy.GetParameterAsText(3):
-    n_cols = arcpy.GetParameterAsText(3)
-    n_rows = arcpy.GetParameterAsText(4)
-    xll_corner = arcpy.GetParameterAsText(5)
-    yll_corner = arcpy.GetParameterAsText(6)
-    cell_size = arcpy.GetParameterAsText(7)
-    nodata_value = arcpy.GetParameterAsText(8)
+if arcpy.GetParameterAsText(2):
+    n_cols = arcpy.GetParameterAsText(2)
+    n_rows = arcpy.GetParameterAsText(3)
+    xll_corner = arcpy.GetParameterAsText(4)
+    yll_corner = arcpy.GetParameterAsText(5)
+    cell_size = arcpy.GetParameterAsText(6)
+    nodata_value = arcpy.GetParameterAsText(7)
 
 header = ['NCOLS ' + n_cols, 'NROWS ' + n_rows, 'XLLCORNER ' + xll_corner,
           'YLLCORNER ' + yll_corner,
