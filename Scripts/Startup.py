@@ -8,10 +8,10 @@ class Startup(object):
     """Load GSLIB file and refactor for ArcGIS"""
 
 
-dirname = os.path.dirname(__file__)
-inFilename = os.path.join(dirname, '../Data', 'test')
-outFilename = os.path.join(dirname, '../Data', 'output.txt')
-outRaster = os.path.join(dirname, '../Data', 'outputRaster.tif')
+in_workspace = os.path.dirname(__file__)
+in_file = os.path.join(in_workspace, '../Data', 'test')
+out_file = os.path.join(in_workspace, '../Data', 'output.txt')
+out_raster = os.path.join(in_workspace, '../Data', 'outputRaster.tif')
 
 
 def parse_header(params, doc_reader):
@@ -36,7 +36,7 @@ def load_csv():
     parsed_coordinates = ''
 
     # Open GSLIB file as csv object for formatting purposes
-    with open(inFilename, 'rb') as file:
+    with open(in_file, 'rb') as file:
         doc_reader = csv.reader(file, delimiter='\t')
 
         parse_header(params, doc_reader)
@@ -47,7 +47,7 @@ def load_csv():
         doc_reversed = reversed(list(doc_reader))
 
         # Create output file to be loaded into ArcMap
-        with open(outFilename, 'wb') as new_file:
+        with open(out_file, 'wb') as new_file:
             doc_writer = csv.writer(new_file, delimiter=' ', quotechar='', quoting=csv.QUOTE_NONE, escapechar=' ')
             # Re-write header back to the top of reversed list
             doc_writer.writerow(params)
@@ -56,8 +56,8 @@ def load_csv():
             for row in doc_reversed:
                 doc_writer.writerow(row)
 
-    arcpy.env.workspace = arcpy.env.workspace = dirname
-    arcpy.ASCIIToRaster_conversion(outFilename, outRaster)
+    arcpy.env.workspace = arcpy.env.workspace = in_workspace
+    arcpy.ASCIIToRaster_conversion(out_file, out_raster)
 
 
 load_csv()
