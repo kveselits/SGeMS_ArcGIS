@@ -1,18 +1,16 @@
 import csv
 import os
-
 import arcpy
 
-
-class Startup(object):
-    """Load GSLIB file and refactor for ArcGIS"""
-
+"""Load GSLIB file and refactor for ArcGIS"""
 
 # Default Workspace and file paths will be replaced if parameters are given
 in_workspace = os.path.dirname(__file__)
 in_file = os.path.join(in_workspace, '../Data', 'test')
 out_file = os.path.join(in_workspace, '../Data', 'output.txt')
 out_raster = os.path.join(in_workspace, '../Data', 'outputRaster.tif')
+out_raster_mirrored = os.path.join(in_workspace, '../Data', 'outputRaster_mirrored.tif')
+out_raster_aggregate = os.path.join(in_workspace, '../Data', 'outputRaster_aggregate.tif')
 
 # Check if parameters are given
 if arcpy.GetParameterAsText(0):
@@ -26,6 +24,7 @@ xll_corner = '378923'
 yll_corner = '4072345'
 cell_size = '30'
 nodata_value = -32768
+aggregation_distance = 100
 
 if arcpy.GetParameterAsText(2):
     n_cols = arcpy.GetParameterAsText(2)
@@ -34,6 +33,7 @@ if arcpy.GetParameterAsText(2):
     yll_corner = arcpy.GetParameterAsText(5)
     cell_size = arcpy.GetParameterAsText(6)
     nodata_value = arcpy.GetParameterAsText(7)
+    aggregation_distance = arcpy.GetParameterAsText(8)
 
 header = ['NCOLS ' + n_cols, 'NROWS ' + n_rows, 'XLLCORNER ' + xll_corner,
           'YLLCORNER ' + yll_corner,
@@ -86,7 +86,8 @@ def load_csv():
                 doc_writer.writerow(row)
 
     arcpy.ASCIIToRaster_conversion(out_file, out_raster)
-    arcpy.Mirror_management(out_raster, os.path.join(in_workspace, '../Data', 'outputRaster_mirrored.tif'))
+    arcpy.Mirror_management(out_raster, out_raster_mirrored)
+    #arcpy.AggregatePolygons_cartography(out_raster_mirrored, out_raster_aggregate, aggregation_distance)
 
 
 load_csv()
