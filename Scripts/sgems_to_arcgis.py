@@ -4,18 +4,26 @@ import arcpy
 
 """Load GSLIB file and refactor for ArcGIS"""
 # Get input file and set workspace from relative path
-in_file = arcpy.GetParameterAsText(0)
-in_workspace = os.path.dirname(in_file)
-out_file = os.path.join(in_workspace, 'output.txt')
-out_raster = os.path.join(in_workspace, 'outputRaster.tif')
+# Default Workspace and file paths will be replaced if parameters are given
+in_workspace = os.path.dirname(__file__)
+in_file = os.path.join(in_workspace, '..\\Data\\test')
+out_file = os.path.join(in_workspace, '..\\Data\\output.txt')
+out_raster = os.path.join(in_workspace, '..\\Data\\outputRaster.tif')
+arcpy.env.overwriteOutput = True
 
-# Get header data as input from user
-n_cols = arcpy.GetParameterAsText(1)
-n_rows = arcpy.GetParameterAsText(2)
-xll_center = arcpy.GetParameterAsText(3)
-yll_center = arcpy.GetParameterAsText(4)
-cell_size = arcpy.GetParameterAsText(5)
-nodata_value = arcpy.GetParameterAsText(6)
+# Check if parameters are given
+if arcpy.GetParameterAsText(0):
+    in_file = arcpy.GetParameterAsText(0)
+    out_raster = arcpy.GetParameterAsText(1)
+
+# Default header data for testing purposes
+n_cols = '70'
+n_rows = '105'
+xll_center = '378923'
+yll_center = '4072345'
+cell_size = '30'
+nodata_value = '-32768'
+#aggregation_distance = 100
 
 header = ['NCOLS ' + n_cols, 'NROWS ' + n_rows, 'XLLCENTER ' + xll_center,
           'YLLCENTER ' + yll_center,
@@ -67,7 +75,10 @@ def load_csv():
 
     # Convert ASCII file to raster. Output will be in same directory as input GSLIB file
     arcpy.ASCIIToRaster_conversion(out_file, out_raster)
-    arcpy.Mirror_management(out_raster, os.path.join(in_workspace, 'outputRaster_mirrored.tif'))
+    arcpy.Mirror_management(out_raster, os.path.join(in_workspace, '..\\Data\\raster_m.tif'))
+
+    # Clean-up stray files
+    arcpy.Delete_management(out_raster)
 
 
 load_csv()
