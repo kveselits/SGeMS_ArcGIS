@@ -8,6 +8,7 @@ in_file = arcpy.GetParameterAsText(0)
 in_workspace = os.path.dirname(in_file)
 out_file = os.path.join(in_workspace, 'output.txt')
 out_raster = os.path.join(in_workspace, 'outputRaster.tif')
+arcpy.env.overwriteOutput = True
 
 # Get header data as input from user
 n_cols = arcpy.GetParameterAsText(1)
@@ -16,6 +17,7 @@ xll_center = arcpy.GetParameterAsText(3)
 yll_center = arcpy.GetParameterAsText(4)
 cell_size = arcpy.GetParameterAsText(5)
 nodata_value = arcpy.GetParameterAsText(6)
+arcpy.env.outputCoordinateSystem = arcpy.GetParameter(7)
 
 header = ['NCOLS ' + n_cols, 'NROWS ' + n_rows, 'XLLCENTER ' + xll_center,
           'YLLCENTER ' + yll_center,
@@ -68,6 +70,9 @@ def load_csv():
     # Convert ASCII file to raster. Output will be in same directory as input GSLIB file
     arcpy.ASCIIToRaster_conversion(out_file, out_raster)
     arcpy.Mirror_management(out_raster, os.path.join(in_workspace, 'outputRaster_mirrored.tif'))
+
+    # Clean-up stray files
+    arcpy.Delete_management(out_raster)
 
 
 load_csv()
